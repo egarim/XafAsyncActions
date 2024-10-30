@@ -20,11 +20,11 @@ namespace XafAsyncActions.Module.BusinessObjects
     //[DefaultListViewOptions(MasterDetailMode.ListViewOnly, false, NewItemRowPosition.None)]
     //[Persistent("DatabaseTableName")]
     // Specify more UI options using a declarative approach (https://docs.devexpress.com/eXpressAppFramework/112701/business-model-design-orm/data-annotations-in-data-model).
-    public class Customer : BaseObject
+    public class TestObject : BaseObject
     { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://docs.devexpress.com/eXpressAppFramework/113146/business-model-design-orm/business-model-design-with-xpo/base-persistent-classes).
         // Use CodeRush to create XPO classes and properties with a few keystrokes.
         // https://docs.devexpress.com/CodeRushForRoslyn/118557
-        public Customer(Session session)
+        public TestObject(Session session)
             : base(session)
         {
         }
@@ -34,13 +34,22 @@ namespace XafAsyncActions.Module.BusinessObjects
             // Place your initialization code here (https://docs.devexpress.com/eXpressAppFramework/112834/getting-started/in-depth-tutorial-winforms-webforms/business-model-design/initialize-a-property-after-creating-an-object-xpo?v=22.1).
         }
 
-        bool active;
 
-        public bool Active
+        string result;
+        bool uILocked;
+
+        public bool UILocked
         {
-            get => active;
-            set => SetPropertyValue(nameof(Active), ref active, value);
+            get => uILocked;
+            set => SetPropertyValue(nameof(UILocked), ref uILocked, value);
         }
         
+        [Size(SizeAttribute.Unlimited)]
+        public string Result
+        {
+            get => result;
+            set => SetPropertyValue(nameof(Result), ref result, value);
+        }
+
     }
 }

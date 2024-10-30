@@ -28,15 +28,38 @@ namespace XafAsyncActions.Blazor.Server.Controllers
             base.OnDeactivated();
 
         }
-        protected async override void AsyncAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+
+        //The idea here is to show a loading indicator while the action is executing
+        protected async override void ActionWithAsyncModifierAndOsOperations_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+
+            loading.Hold("Loading");//this will not happen because the action is async and the U.I thread will NOT be blocked
+            //during this execution the U.I thread will not be blocked, and the user can interact with the object or navigate away,this is not what we want
+            base.ActionWithAsyncModifierAndOsOperations_Execute(sender, e);
+            loading.Release("Loading");//this will not happen because the action is async and the U.I thread will NOT be blocked
+        }
+        protected async override void ActionWithAsyncModifier_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            loading.Hold("Loading");//this will not happen because the action is async and the U.I thread will NOT be blocked
+            base.ActionWithAsyncModifier_Execute(sender, e);
+            loading.Release("Loading");//this will not happen because the action is async and the U.I thread will NOT be blocked
+        }
+
+        #region AsyncActionWithAsyncBackgroundWorker
+
+        protected async override void AsyncActionWithAsyncBackgroundWorker_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
 
             //HACK show loading indicator
             loading.Hold("Loading");
             //Execute the base action on the agnostic module
-            base.AsyncAction_Execute(sender, e);
-        
+            base.AsyncActionWithAsyncBackgroundWorker_Execute(sender, e);
 
+        }
+        protected override void OnReportProgress(int progress, string status, object result)
+        {
+            //HACK this is in the U.I thread, so we can interact with the U.I and the view and object space of this controller
+            base.OnReportProgress(progress, status, result);
         }
         protected async override void ProcessingDone(Dictionary<int, object> results)
         {
@@ -44,7 +67,8 @@ namespace XafAsyncActions.Blazor.Server.Controllers
             base.ProcessingDone(results);
             //HACK hide loading indicator
             loading.Release("Loading");
-           
+
         }
+        #endregion
     }
 }
